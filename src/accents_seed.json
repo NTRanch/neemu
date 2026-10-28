@@ -1,0 +1,959 @@
+[
+ {
+  "profile_id": "en-us-general",
+  "label": "General American (en-US)",
+  "kind": "regional",
+  "phonetic_features": [
+   "rhotic /r/",
+   "flapped intervocalic /t/",
+   "cot-caught merger common",
+   "flat /a/ in 'bath'"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "neutral declarative fall",
+    "list rise"
+   ],
+   "stress_habits": "initial stress on nouns"
+  },
+  "reaction_set": {
+   "gasps": [
+    "hah",
+    "hh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh"
+   ],
+   "cries": [
+    "ah!",
+    "oh!"
+   ],
+   "interjections": [
+    "oh",
+    "well",
+    "hey"
+   ]
+  },
+  "expected_confusions": [
+   "en-canadian"
+  ],
+  "conditioning": {
+   "default_intensity": 0.6
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-us-southern",
+  "label": "Southern American (en-US)",
+  "kind": "regional",
+  "phonetic_features": [
+   "pin-pen merger",
+   "monophthongised /aɪ/ ('ah')",
+   "drawled diphthong breaking",
+   "non-rhotic pockets"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed, slowed",
+   "intonation_contours": [
+    "drawled rise-fall",
+    "warm terminal fall"
+   ],
+   "stress_habits": "lengthened stressed vowels"
+  },
+  "reaction_set": {
+   "gasps": [
+    "huhh",
+    "hh-"
+   ],
+   "laughter": [
+    "haw-haw",
+    "heh-heh"
+   ],
+   "cries": [
+    "lordy!",
+    "oh!"
+   ],
+   "interjections": [
+    "well now",
+    "bless it",
+    "y'all"
+   ]
+  },
+  "expected_confusions": [
+   "en-us-general"
+  ],
+  "conditioning": {
+   "default_intensity": 0.75
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-us-northeast",
+  "label": "Northeast American (en-US)",
+  "kind": "regional",
+  "phonetic_features": [
+   "non-rhotic (Boston/New York pockets)",
+   "raised /æ/ before nasals",
+   "broad /a/ in 'bath' (NYC)",
+   "fast consonant release"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed, fast",
+   "intonation_contours": [
+    "clipped declarative fall",
+    "sharp question rise"
+   ],
+   "stress_habits": "rapid stress alternation"
+  },
+  "reaction_set": {
+   "gasps": [
+    "hah!",
+    "huh"
+   ],
+   "laughter": [
+    "hah-ha",
+    "pfft-ha"
+   ],
+   "cries": [
+    "ah!",
+    "oy!"
+   ],
+   "interjections": [
+    "hey",
+    "listen",
+    "c'mon"
+   ]
+  },
+  "expected_confusions": [
+   "en-us-general",
+   "en-gb-rp"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-gb-rp",
+  "label": "Received Pronunciation (en-GB)",
+  "kind": "regional",
+  "phonetic_features": [
+   "non-rhotic",
+   "trap-bath split (broad /aː/)",
+   "clear /l/",
+   "diphthong centring in 'near', 'square'"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "measured fall",
+    "polite rise"
+   ],
+   "stress_habits": "even stress distribution"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "oh-"
+   ],
+   "laughter": [
+    "ha-ha (restrained)",
+    "hm-hm"
+   ],
+   "cries": [
+    "oh!",
+    "ah!"
+   ],
+   "interjections": [
+    "well",
+    "quite",
+    "I say"
+   ]
+  },
+  "expected_confusions": [
+   "en-gb-northern",
+   "en-australian"
+  ],
+  "conditioning": {
+   "default_intensity": 0.55
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-gb-northern",
+  "label": "Northern English (en-GB)",
+  "kind": "regional",
+  "phonetic_features": [
+   "non-rhotic",
+   "no trap-bath split (flat /a/)",
+   "no foot-strut split",
+   "monophthongal /eɪ/ and /əʊ/"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "warm fall",
+    "level listing tone"
+   ],
+   "stress_habits": "front-weighted stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "eh",
+    "ah-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "ee-heh"
+   ],
+   "cries": [
+    "ey!",
+    "oh!"
+   ],
+   "interjections": [
+    "ey up",
+    "love",
+    "reight"
+   ]
+  },
+  "expected_confusions": [
+   "en-gb-rp",
+   "en-scottish"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-scottish",
+  "label": "Scottish English",
+  "kind": "regional",
+  "phonetic_features": [
+   "rhotic (trilled/tapped /r/)",
+   "monophthongal vowels",
+   "velar fricative /x/ in 'loch'",
+   "vowel length by environment (SVLR)"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "rising terminal lilt",
+    "emphatic fall"
+   ],
+   "stress_habits": "strong initial stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "och",
+    "hh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh-heh"
+   ],
+   "cries": [
+    "och!",
+    "ah!"
+   ],
+   "interjections": [
+    "och",
+    "aye",
+    "wee"
+   ]
+  },
+  "expected_confusions": [
+   "en-irish",
+   "en-gb-northern"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-welsh",
+  "label": "Welsh English",
+  "kind": "regional",
+  "phonetic_features": [
+   "clear /l/ in all positions",
+   "sing-song pitch range",
+   "aspirated stops",
+   "vowel length contrasts"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "syllable-leaning",
+   "intonation_contours": [
+    "rising-falling lilt",
+    "terminal rise"
+   ],
+   "stress_habits": "penultimate stress echo"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "ooh-"
+   ],
+   "laughter": [
+    "ha-ha (lilting)",
+    "heh"
+   ],
+   "cries": [
+    "oh!",
+    "ach!"
+   ],
+   "interjections": [
+    "now then",
+    "look you",
+    "there we are"
+   ]
+  },
+  "expected_confusions": [
+   "en-gb-rp",
+   "en-irish"
+  ],
+  "conditioning": {
+   "default_intensity": 0.65
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-irish",
+  "label": "Irish English",
+  "kind": "regional",
+  "phonetic_features": [
+   "rhotic /r/",
+   "dental stops for 'th'",
+   "epenthesis in 'film' ('filum')",
+   "clear /l/"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed, lilting",
+   "intonation_contours": [
+    "high rising terminal",
+    "soft fall"
+   ],
+   "stress_habits": "melodic stress peaks"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "eh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh-heh"
+   ],
+   "cries": [
+    "ah!",
+    "jesus!"
+   ],
+   "interjections": [
+    "ah sure",
+    "grand",
+    "feck"
+   ]
+  },
+  "expected_confusions": [
+   "en-scottish",
+   "en-gb-northern"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-canadian",
+  "label": "Canadian English",
+  "kind": "regional",
+  "phonetic_features": [
+   "rhotic /r/",
+   "Canadian raising ('about' → 'aboot'-tinged)",
+   "cot-caught merger",
+   "flapped /t/"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "neutral fall",
+    "polite terminal rise"
+   ],
+   "stress_habits": "even stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "hah",
+    "eh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh"
+   ],
+   "cries": [
+    "oh!",
+    "ah!"
+   ],
+   "interjections": [
+    "eh",
+    "sorry",
+    "hey"
+   ]
+  },
+  "expected_confusions": [
+   "en-us-general"
+  ],
+  "conditioning": {
+   "default_intensity": 0.5
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-australian",
+  "label": "Australian English",
+  "kind": "regional",
+  "phonetic_features": [
+   "non-rhotic",
+   "broad diphthongs ('day' → 'die'-tinged)",
+   "high rising terminal (uptalk)",
+   "flapped /t/"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "high rising terminal",
+    "flat fall"
+   ],
+   "stress_habits": "relaxed stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "oh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh-heh"
+   ],
+   "cries": [
+    "ah!",
+    "crikey!"
+   ],
+   "interjections": [
+    "mate",
+    "yeah nah",
+    "no worries"
+   ]
+  },
+  "expected_confusions": [
+   "en-new-zealand",
+   "en-gb-rp"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-new-zealand",
+  "label": "New Zealand English",
+  "kind": "regional",
+  "phonetic_features": [
+   "non-rhotic",
+   "centralised /ɪ/ ('fush and chips')",
+   "raised short front vowels",
+   "high rising terminal"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "rising terminal",
+    "soft fall"
+   ],
+   "stress_habits": "even stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "eh",
+    "ah-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh"
+   ],
+   "cries": [
+    "oh!",
+    "ah!"
+   ],
+   "interjections": [
+    "yeah nah",
+    "sweet as",
+    "eh"
+   ]
+  },
+  "expected_confusions": [
+   "en-australian"
+  ],
+  "conditioning": {
+   "default_intensity": 0.65
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-south-african",
+  "label": "South African English",
+  "kind": "regional",
+  "phonetic_features": [
+   "non-rhotic",
+   "fronted /a/ in 'park'",
+   "clipped short vowels",
+   "devoiced final consonants (Germanic/Afrikaans substrate)"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed",
+   "intonation_contours": [
+    "clipped fall",
+    "level tone"
+   ],
+   "stress_habits": "firm stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "eish-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh"
+   ],
+   "cries": [
+    "eish!",
+    "ah!"
+   ],
+   "interjections": [
+    "shame",
+    "just now",
+    "hey"
+   ]
+  },
+  "expected_confusions": [
+   "en-australian",
+   "en-gb-rp"
+  ],
+  "conditioning": {
+   "default_intensity": 0.65
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-caribbean",
+  "label": "Caribbean English",
+  "kind": "regional",
+  "phonetic_features": [
+   "syllable-timed rhythm",
+   "th-stopping ('dis', 'dat')",
+   "vowel length musicality",
+   "final consonant cluster reduction"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "syllable-timed",
+   "intonation_contours": [
+    "musical rise-fall",
+    "call-and-response lilt"
+   ],
+   "stress_habits": "melodic stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "eh-eh",
+    "oo-"
+   ],
+   "laughter": [
+    "ha-ha-ha",
+    "kya-kya"
+   ],
+   "cries": [
+    "oii!",
+    "eh!"
+   ],
+   "interjections": [
+    "man",
+    "eh-eh",
+    "wha gwaan"
+   ]
+  },
+  "expected_confusions": [
+   "en-us-southern"
+  ],
+  "conditioning": {
+   "default_intensity": 0.75
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-fr-french",
+  "label": "English with a French accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "uvular or tapped /r/",
+   "nasalised vowels before n/m",
+   "silent-h dropping and hypercorrect h",
+   "rounded /u/ fronting"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "syllable-timed",
+   "intonation_contours": [
+    "phrase-final rise",
+    "even melodic contour"
+   ],
+   "stress_habits": "final-syllable stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "oh la-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "hé-hé"
+   ],
+   "cries": [
+    "aïe!",
+    "oh là là!"
+   ],
+   "interjections": [
+    "alors",
+    "eh bien",
+    "voilà"
+   ]
+  },
+  "expected_confusions": [
+   "en-it-italian"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-it-italian",
+  "label": "English with an Italian accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "trilled/tapped /r/",
+   "epenthetic vowel after final consonants",
+   "no vowel reduction (full vowels)",
+   "gemination echo"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "syllable-timed",
+   "intonation_contours": [
+    "expansive rise-fall",
+    "emphatic contour"
+   ],
+   "stress_habits": "strong penultimate stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "oh-"
+   ],
+   "laughter": [
+    "ah-ah",
+    "eh-eh"
+   ],
+   "cries": [
+    "ahi!",
+    "mamma mia!"
+   ],
+   "interjections": [
+    "allora",
+    "ecco",
+    "dai"
+   ]
+  },
+  "expected_confusions": [
+   "en-fr-french",
+   "en-es-spanish"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-es-spanish",
+  "label": "English with a Spanish accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "tapped /r/, trill for emphasis",
+   "epenthetic e- before s+consonant ('espeak')",
+   "five-vowel system mapped onto English",
+   "no /v/-/b/ contrast"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "syllable-timed",
+   "intonation_contours": [
+    "steady rise",
+    "warm fall"
+   ],
+   "stress_habits": "even syllable stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "ay-"
+   ],
+   "laughter": [
+    "ja-ja (spelled ha-ha)",
+    "je-je"
+   ],
+   "cries": [
+    "¡ay!",
+    "ah!"
+   ],
+   "interjections": [
+    "bueno",
+    "vale",
+    "mira"
+   ]
+  },
+  "expected_confusions": [
+   "en-it-italian",
+   "en-pt-br"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-de-german",
+  "label": "English with a German accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "uvular or rolled /r/",
+   "final devoicing ('dog' → 'dok')",
+   "long/short vowel over-contrast",
+   "precise consonant release"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed, measured",
+   "intonation_contours": [
+    "firm declarative fall",
+    "level listing"
+   ],
+   "stress_habits": "exact stress placement"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "oh-"
+   ],
+   "laughter": [
+    "ha-ha (measured)",
+    "heh"
+   ],
+   "cries": [
+    "ach!",
+    "oh!"
+   ],
+   "interjections": [
+    "also",
+    "genau",
+    "ja"
+   ]
+  },
+  "expected_confusions": [
+   "en-ru-russian"
+  ],
+  "conditioning": {
+   "default_intensity": 0.6
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-pt-br",
+  "label": "English with a Brazilian Portuguese accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "palatalised /t/ and /d/ before /i/ ('tchee')",
+   "nasalised vowels",
+   "epenthetic i after final consonants",
+   "open /ɛ/ and /ɔ/ richness"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "syllable-timed",
+   "intonation_contours": [
+    "melodic rise-fall",
+    "warm contour"
+   ],
+   "stress_habits": "flowing stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "oh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "rsrs (written laugh)"
+   ],
+   "cries": [
+    "ai!",
+    "nossa!"
+   ],
+   "interjections": [
+    "então",
+    "né",
+    "gente"
+   ]
+  },
+  "expected_confusions": [
+   "en-pt-pt",
+   "en-es-spanish"
+  ],
+  "conditioning": {
+   "default_intensity": 0.7
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-ja-japanese",
+  "label": "English with a Japanese accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "single flap for /l/ and /r/",
+   "epenthetic vowels after consonants (katakana rhythm)",
+   "no /v/, /θ/, /ð/ (→ b, s, z)",
+   "syllable-mora timing"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "mora-timed",
+   "intonation_contours": [
+    "flat contour with phrase-final fall",
+    "polite rise"
+   ],
+   "stress_habits": "even mora stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "eh-"
+   ],
+   "laughter": [
+    "ha-ha (soft)",
+    "ehe"
+   ],
+   "cries": [
+    "ah!",
+    "etto!"
+   ],
+   "interjections": [
+    "etto",
+    "ano",
+    "ne"
+   ]
+  },
+  "expected_confusions": [
+   "en-fr-french"
+  ],
+  "conditioning": {
+   "default_intensity": 0.6
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-ru-russian",
+  "label": "English with a Russian accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "trilled /r/",
+   "palatalised consonants",
+   "no /w/-/v/ contrast stability",
+   "reduced unstressed vowels absent (full vowels)"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "stress-timed, heavy",
+   "intonation_contours": [
+    "descending emphatic fall",
+    "narrow pitch range"
+   ],
+   "stress_habits": "strong stress peaks"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "eh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "khe-khe"
+   ],
+   "cries": [
+    "oy!",
+    "ah!"
+   ],
+   "interjections": [
+    "nu",
+    "tak",
+    "vot"
+   ]
+  },
+  "expected_confusions": [
+   "en-de-german"
+  ],
+  "conditioning": {
+   "default_intensity": 0.65
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ },
+ {
+  "profile_id": "en-pt-pt",
+  "label": "English with a European Portuguese accent",
+  "kind": "l1-influenced",
+  "phonetic_features": [
+   "dark reduced unstressed vowels",
+   "rolled /r/",
+   "sh-like /ʃ/ for s before consonants",
+   "closed vowel quality"
+  ],
+  "prosody_profile": {
+   "rhythm_class": "syllable-timed",
+   "intonation_contours": [
+    "level contour",
+    "soft fall"
+   ],
+   "stress_habits": "subdued stress"
+  },
+  "reaction_set": {
+   "gasps": [
+    "ah",
+    "oh-"
+   ],
+   "laughter": [
+    "ha-ha",
+    "heh"
+   ],
+   "cries": [
+    "ai!",
+    "opa!"
+   ],
+   "interjections": [
+    "então",
+    "pois",
+    "pronto"
+   ]
+  },
+  "expected_confusions": [
+   "en-pt-br",
+   "en-es-spanish"
+  ],
+  "conditioning": {
+   "default_intensity": 0.6
+  },
+  "provenance": "owner-seed (SPEC 3.12)"
+ }
+]

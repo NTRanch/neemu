@@ -1,0 +1,32 @@
+{
+ "bundle_id": "bundle.dd956d6187accc70",
+ "content_hash": "dd956d6187accc70be0c001a5e579cda51ac8ee6ee6a76b73a57257581ad8e40",
+ "cue": {
+  "cue_id": "cue_001",
+  "text": "Look into my eyes now",
+  "conditioning": {
+   "text": "Look into my eyes now",
+   "identity_ref": "voice.fixture.neemu",
+   "instruction": null,
+   "f0_median_hz": 196.0,
+   "f0_range_semitones": null,
+   "tempo_syllables_per_sec": null,
+   "pause_structure": null,
+   "breathiness": null,
+   "grade": null,
+   "accent_profile_ref": null,
+   "accent_intensity": null,
+   "breath_bracket": "NotRequired",
+   "determinism_class": "SeedReproducible",
+   "seed": 42
+  },
+  "intent": "line",
+  "target_voice": "voice.fixture.neemu",
+  "sfx_pairs": [
+   "pair.breath.hold"
+  ],
+  "tier": "Measured"
+ },
+ "note": "Emitted-format sample: produced by the same writer + hash recipe as neemu_emit_torori_cue (src/s3.rs); validated by tests/s3_readiness.rs and by torori torori_bundle_validate in the S3 round-trip.",
+ "cues_hash": "fb52104a8cd72d25e392949b0ed9b415c049e70961dedcae34cdee271abf4745"
+}
