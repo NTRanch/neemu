@@ -82,6 +82,6 @@ Curated 2026-10-28 (D-313 Phase 0 — NTRanch four → 1.0 program): baseline is
 - [x] R-604 SPEC S3 delivery/conditioning stage complete: S3 tools consume torori's frozen conditioning schema v1 (e0df698d…); SPEC §7 S3 battery + torori-shaped bundle round-trip green (landed in 22ffe7d)
   - verify: cargo test
   - evidence: 1 verify commands, all exit 0 at 2026-10-29T04:50:08Z
-- [~] R-605 neemu 1.0.0 published to crates.io under the NTRanch account
+- [x] R-605 neemu 1.0.0 published to crates.io under the NTRanch account
   - verify: curl -sf -H "User-Agent: bloch-roadmap" https://crates.io/api/v1/crates/neemu/1.0.0 -o /dev/null
-  - evidence:
+  - evidence: 1 verify commands, all exit 0 at 2026-10-29T05:11:24Z
