@@ -1,6 +1,6 @@
 [package]
 name = "neemu"
-version = "0.2.0"
+version = "1.0.0"
 edition = "2021"
 description = "Neemu MCP — media extraction for animation and voice (S1: registry + screen/tier gates + image lane)"
 license = "Apache-2.0"
