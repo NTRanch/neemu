@@ -198,6 +198,19 @@ Per observed face, per panel/frame:
   the scene beats it carries, proposed code). New candidates are
   first-class output — never force-fit, never dropped (Owner,
   2026-10-27).
+- `f_code` may also name a ratified N-code (N-01..N-06, D-326):
+  states the F-family does not carry, ratified from the Marsha
+  extraction (doujins:57442). N-codes resolve through the same
+  registry lookup as F-codes (`resolve_face_code`); N-01..N-04
+  and N-06 are full canon entries, and N-05 (white-roll peak)
+  resolves as a **named variant** of the peak slot — never a
+  full entry, never displacing F-05's solidity law. Records
+  minted against an N-code embed a `code_resolution` snapshot
+  carrying the entry's status plus its lane labels
+  (`origin_lane: ntranch`, `content_label: nsfw`, bloch §9).
+  Unknown codes (e.g. N-07) fail closed exactly as unknown
+  F-codes do; the candidate space stays open for genuinely new
+  states.
 - Measurement basis: grid-read per `local-face-state-measurement`;
   unvalidated automated segmentation is never trusted as a
   measurement. Each observation names its basis (`grid-read`,
@@ -243,7 +256,8 @@ Per distinct act in a scene:
   pretending to be captured motion data.
 - `motion`: rhythm (beats per cycle, tempo curve), intensity
   curve over the act, entry/exit transitions.
-- `face_timeline`: F-code / FaceObservation refs per beat.
+- `face_timeline`: face-code (F- or ratified N-code, resolved
+  as in §3.1) / FaceObservation refs per beat.
 - `sfx_hooks`: torori catalogue pair/programme refs where the act
   implies sound (shape per the torori GAP5 spec, e.g.
   `pair.torori.*`, `program_id: torori.conditioning-kit`).

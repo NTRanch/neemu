@@ -242,7 +242,7 @@ pub fn tool_definitions() -> Value {
         },
         {
             "name": "neemu_extract_faces",
-            "description": "Mint FaceObservation records for a page range from caller grid-read / model-estimate measurements. Validates 8 channels, F-code or new-candidate, basis, lineage caps. Oversize ranges: declared partial.",
+            "description": "Mint FaceObservation records for a page range from caller grid-read / model-estimate measurements. Validates 8 channels, face code (F-01..F-12 or ratified N-01..N-06, D-326) or new-candidate, basis, lineage caps. Page bound: MAX_PAGES_PER_CALL = 32 pages per call; oversize ranges return a declared partial with a continuation range.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -271,13 +271,13 @@ pub fn tool_definitions() -> Value {
                                     },
                                     "required": ["gaze", "pupils", "crossing", "lids", "brows", "mouth", "flush", "secondary"]
                                 },
-                                "f_code": { "type": ["string", "null"], "description": "F-01..F-12, or null + new_candidate." },
+                                "f_code": { "type": ["string", "null"], "description": "F-01..F-12 or ratified N-01..N-06 (D-326; N-05 resolves as a named variant, never a full entry), or null + new_candidate." },
                                 "new_candidate": {
                                     "type": "object",
                                     "properties": {
                                         "channels": { "type": "object", "description": "Full 8-channel description." },
                                         "beats": { "type": "array", "items": { "type": "string" }, "description": "Beats the state carries." },
-                                        "proposed_code": string_field("Proposed code (no F-01..F-12 collision).")
+                                        "proposed_code": string_field("Proposed code (no F- or N-code collision).")
                                     },
                                     "required": ["channels", "beats", "proposed_code"]
                                 },
@@ -313,7 +313,7 @@ pub fn tool_definitions() -> Value {
         },
         {
             "name": "neemu_extract_dialogue",
-            "description": "Mint DialogueLine records for a page range from caller-transcribed lines ([unclear] = illegible, never guessed). Word-level nesting (delta 8) + known_limitations.",
+            "description": "Mint DialogueLine records for a page range from caller-transcribed lines ([unclear] = illegible, never guessed). Word-level nesting (delta 8) + known_limitations. Page bound: MAX_PAGES_PER_CALL = 32 pages per call; oversize ranges return a declared partial with a continuation range.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -960,8 +960,10 @@ fn extract_faces(neemu: &Neemu, args: &Value) -> CallResult {
                 "{context}: basis must be \"grid-read\" or \"model-estimate\""
             )));
         }
-        // F-code: an existing code, or null + a complete new-candidate.
-        let (f_code, new_candidate) = match obs.get("f_code") {
+        // Face code: an existing code (F-family or ratified
+        // N-code, resolved through the one lookup), or null + a
+        // complete new-candidate.
+        let (f_code, new_candidate, code_resolution) = match obs.get("f_code") {
             Some(Value::Null) | None => {
                 let candidate = obs
                     .get("new_candidate")
@@ -992,9 +994,9 @@ fn extract_faces(neemu: &Neemu, args: &Value) -> CallResult {
                     }
                 }
                 let proposed = req_str(candidate, "proposed_code")?;
-                if F_CODES.contains(&proposed) {
+                if resolve_face_code(proposed).is_some() {
                     return Err(CallError::Args(format!(
-                        "{context}.new_candidate: proposed_code {proposed} collides with an existing F-code"
+                        "{context}.new_candidate: proposed_code {proposed} collides with an existing face code"
                     )));
                 }
                 (
@@ -1004,15 +1006,23 @@ fn extract_faces(neemu: &Neemu, args: &Value) -> CallResult {
                         "beats": beats,
                         "proposed_code": proposed,
                     }),
+                    Value::Null,
                 )
             }
             Some(Value::String(code)) => {
-                if !F_CODES.contains(&code.as_str()) {
-                    return Err(CallError::Args(format!(
-                        "{context}: unknown f_code {code} (canonical codes are F-01..F-12; use null + new_candidate for a new state)"
-                    )));
-                }
-                (json!(code), Value::Null)
+                let resolution = resolve_face_code(code).ok_or_else(|| {
+                    CallError::Args(format!(
+                        "{context}: unknown f_code {code} (canonical codes are F-01..F-12 and N-01..N-06 (ratified D-326); use null + new_candidate for a new state)"
+                    ))
+                })?;
+                // N-code records embed the resolution snapshot; F
+                // records keep their pre-N shape byte-for-byte.
+                let snapshot = if resolution.family == "N" {
+                    resolution.snapshot()
+                } else {
+                    Value::Null
+                };
+                (json!(code), Value::Null, snapshot)
             }
             Some(_) => {
                 return Err(CallError::Args(format!(
@@ -1089,7 +1099,7 @@ fn extract_faces(neemu: &Neemu, args: &Value) -> CallResult {
                 "trained_on": trained_on,
             });
         }
-        let body = json!({
+        let mut body = json!({
             "record_kind": "face_observation",
             "work_id": work_id,
             "tier": tier_cap,
@@ -1104,6 +1114,12 @@ fn extract_faces(neemu: &Neemu, args: &Value) -> CallResult {
             "input_hashes": [media[page]["sha256"]],
             "extractor": EXTRACTOR_ID,
         });
+        // N-code observations carry their canon resolution; the
+        // key is absent (not null) for F-code and candidate
+        // observations so their record bodies are unchanged.
+        if !code_resolution.is_null() {
+            body["code_resolution"] = code_resolution;
+        }
         let record_id = neemu.mint_record(&work_id, "face_", body)?;
         record_ids.push(record_id);
     }

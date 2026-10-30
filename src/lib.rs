@@ -61,6 +61,136 @@ pub const F_CODES: [&str; 12] = [
     "F-01", "F-02", "F-03", "F-04", "F-05", "F-06", "F-07", "F-08", "F-09", "F-10", "F-11", "F-12",
 ];
 
+/// Status of a full expression-canon entry.
+pub const FACE_CODE_STATUS_CANON: &str = "canon";
+/// Status of a ratified named variant (N-05 only): a rival
+/// convention scoped to its source work's rendering idiom — never
+/// a full entry, never displacing the F-code it rivals, and the
+/// two readings are never averaged into each other.
+pub const FACE_CODE_STATUS_NAMED_VARIANT: &str = "named_variant";
+
+/// One ratified N-code: a face state the F-family does not carry,
+/// ratified into canon from one CLEARED work's extraction (D-326).
+/// N-codes resolve through the same lookup as F-codes
+/// ([`resolve_face_code`]); they are not a parallel mechanism.
+pub struct NCodeEntry {
+    pub code: &'static str,
+    /// Behaviour-level name, from the canon source record.
+    pub name: &'static str,
+    /// [`FACE_CODE_STATUS_CANON`] or
+    /// [`FACE_CODE_STATUS_NAMED_VARIANT`].
+    pub status: &'static str,
+}
+
+/// Canon source of every N-code below: the Marsha extraction
+/// (doujins:57442), ratified by Owner ruling D-326 (2026-10-29).
+/// The channel-level descriptions live in that record; this
+/// registry carries identity + status only, exactly as
+/// [`F_CODES`] carries the F-family's identity.
+pub const N_CODE_SOURCE: &str = "hypnosis-doujin-corpus-20261027/corpus/naive-delinquent-succubus-marsha-chan/EXPRESSIONS.md (ratified D-326)";
+
+/// Lane labels carried by every N-code resolution (bloch §9 lane
+/// law: labels are set at birth and never relabelled in transit).
+pub const N_CODE_ORIGIN_LANE: &str = "ntranch";
+pub const N_CODE_CONTENT_LABEL: &str = "nsfw";
+
+/// The ratified N-codes (D-326): N-01..N-04 and N-06 are full
+/// canon entries; N-05 is the named variant of the peak slot.
+pub const N_CODES: [NCodeEntry; 6] = [
+    NCodeEntry {
+        code: "N-01",
+        name: "Defiant snarl (resistance)",
+        status: FACE_CODE_STATUS_CANON,
+    },
+    NCodeEntry {
+        code: "N-02",
+        name: "Scheming smirk (predatory confidence)",
+        status: FACE_CODE_STATUS_CANON,
+    },
+    NCodeEntry {
+        code: "N-03",
+        name: "Compelled-compliance shock",
+        status: FACE_CODE_STATUS_CANON,
+    },
+    NCodeEntry {
+        code: "N-04",
+        name: "Gritted defiance under stimulation",
+        status: FACE_CODE_STATUS_CANON,
+    },
+    NCodeEntry {
+        code: "N-05",
+        name: "White-roll peak (pupil dissolution)",
+        status: FACE_CODE_STATUS_NAMED_VARIANT,
+    },
+    NCodeEntry {
+        code: "N-06",
+        name: "Dominant predator grin (dark-form)",
+        status: FACE_CODE_STATUS_CANON,
+    },
+];
+
+/// The resolution of one face code against the canonical
+/// registries (the F-family plus the ratified N-codes).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FaceCodeResolution {
+    pub code: String,
+    /// `F` or `N`.
+    pub family: &'static str,
+    /// [`FACE_CODE_STATUS_CANON`] or
+    /// [`FACE_CODE_STATUS_NAMED_VARIANT`].
+    pub status: &'static str,
+    /// Behaviour-level name where the registry carries one (the
+    /// N-registry does; the F-family's names live in the
+    /// face-states reference, not in this tree).
+    pub name: Option<&'static str>,
+}
+
+impl FaceCodeResolution {
+    /// The JSON snapshot embedded in records minted against an
+    /// N-code, so a record carries the canon state it was minted
+    /// against (the ACT registry's `entry_json` discipline).
+    /// N-family only: F-code records keep their pre-N shape, so
+    /// historical F observations re-mint identical record ids.
+    pub fn snapshot(&self) -> Value {
+        debug_assert_eq!(self.family, "N");
+        json!({
+            "code": self.code,
+            "family": self.family,
+            "name": self.name,
+            "registry_status": self.status,
+            "source": N_CODE_SOURCE,
+            "origin_lane": N_CODE_ORIGIN_LANE,
+            "content_label": N_CODE_CONTENT_LABEL,
+        })
+    }
+}
+
+/// Resolve a face code (F-01..F-12, N-01..N-06) to its canon
+/// entry. `None` = not canon: extraction fails closed on it, and
+/// the caller records the state as a new candidate instead. This
+/// is the single lookup every face-code consumer uses
+/// (`neemu_extract_faces`, act face timelines, candidate
+/// collision checks).
+pub fn resolve_face_code(code: &str) -> Option<FaceCodeResolution> {
+    if F_CODES.contains(&code) {
+        return Some(FaceCodeResolution {
+            code: code.to_string(),
+            family: "F",
+            status: FACE_CODE_STATUS_CANON,
+            name: None,
+        });
+    }
+    N_CODES
+        .iter()
+        .find(|entry| entry.code == code)
+        .map(|entry| FaceCodeResolution {
+            code: entry.code.to_string(),
+            family: "N",
+            status: entry.status,
+            name: Some(entry.name),
+        })
+}
+
 /// Training lineages that hard-cap a model-derived record at Tier A
 /// (delta 6), normalised (lowercase, alphanumerics only) for comparison.
 pub const TAINTED_LINEAGES: [&str; 3] = ["affectnet", "rafdb", "fer2013"];
@@ -74,7 +204,11 @@ pub const MAX_MEDIA_FILE_BYTES: u64 = 64 * 1024 * 1024;
 /// Maximum total media bytes in one work.
 pub const MAX_MEDIA_TOTAL_BYTES: u64 = 512 * 1024 * 1024;
 /// Maximum pages processed by one extraction call; larger ranges return
-/// a declared partial with a continuation range.
+/// a declared partial with a continuation range. This is the named
+/// per-call page bound (`MAX_PAGES_PER_CALL` = 32) declared in the
+/// page-range tools' descriptions (`neemu_extract_faces`,
+/// `neemu_extract_dialogue`) and the README tool reference, so
+/// callers learn it from the schema instead of by hitting it.
 pub const MAX_PAGES_PER_CALL: usize = 32;
 /// Default segmentation parameter: maximum pages in one scene.
 pub const DEFAULT_MAX_PAGES_PER_SCENE: usize = 24;

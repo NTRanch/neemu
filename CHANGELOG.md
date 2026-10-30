@@ -5,6 +5,32 @@ All notable changes to neemu. Versions follow the estate MCP
 1.0.0 closes the in-tree records (G-N1 gate report, G-N4 EFLO
 record) and publishes the gated surface.
 
+## [Unreleased]
+
+### Added
+
+- N-code face-state resolution (D-326 follow-up): the six
+  Marsha-canon N-codes (N-01..N-06) now resolve server-side
+  through the same registry lookup as F-codes
+  (`resolve_face_code`), in `neemu_extract_faces` and in act
+  face timelines. N-01..N-04 and N-06 are full canon entries;
+  N-05 (white-roll peak) resolves as a named variant, never a
+  full entry. Records minted against an N-code embed a
+  `code_resolution` snapshot (status, canon source, and the
+  lane labels `origin_lane: ntranch` / `content_label: nsfw`).
+  Unknown N-codes fail closed with the same refusal shape as
+  unknown F-codes; F-code record bodies are unchanged.
+
+### Documentation
+
+- The per-call page bound is now named where callers look:
+  `MAX_PAGES_PER_CALL` = 32 pages per call is stated in the
+  `neemu_extract_faces` / `neemu_extract_dialogue` tool
+  descriptions and the README tool reference. No behaviour
+  change — oversize ranges already returned declared partials
+  with continuation ranges; the limit is now declared instead
+  of discovered by failure.
+
 ## [1.0.0] — 2026-10-28
 
 ### Added

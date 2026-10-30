@@ -258,9 +258,10 @@ pub fn extract_acts(neemu: &Neemu, args: &Value) -> CallResult {
             }
         };
 
-        // Face timeline: each entry is an F-code (canonical) or a
-        // FaceObservation record id of this work; a dangling ref is
-        // an evidence refusal, never a silent drop.
+        // Face timeline: each entry is a canonical face code
+        // (F-code or ratified N-code, resolved through the one
+        // lookup) or a FaceObservation record id of this work; a
+        // dangling ref is an evidence refusal, never a silent drop.
         let timeline_raw = opt_arr(act_obj, "face_timeline")?
             .cloned()
             .unwrap_or_default();
@@ -276,8 +277,14 @@ pub fn extract_acts(neemu: &Neemu, args: &Value) -> CallResult {
             })?;
             let beat = req_str(entry, "beat")?;
             let reference = req_str(entry, "ref")?;
-            if F_CODES.contains(&reference) {
-                face_timeline.push(json!({ "beat": beat, "f_code": reference }));
+            if let Some(resolution) = resolve_face_code(reference) {
+                let mut entry = json!({ "beat": beat, "f_code": reference });
+                // N-code refs carry their canon resolution; F
+                // entries keep their pre-N shape byte-for-byte.
+                if resolution.family == "N" {
+                    entry["code_resolution"] = resolution.snapshot();
+                }
+                face_timeline.push(entry);
             } else if neemu.record_exists(&work_id, reference) {
                 if neemu.record_kind(&work_id, reference).as_deref() != Some("face_observation") {
                     return Err(CallError::Args(format!(
