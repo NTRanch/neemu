@@ -37,6 +37,38 @@ Per-tool cl100k_base:
 | `neemu_export` | 187 |
 | **Total** | **6,139** |
 
+## Development measure (post-1.0 — N-code landing, 2026-10-29)
+
+Re-measured live on the landed main (N-code resolution,
+D-326 follow-up) with the identical method: the server's live
+`tools/list` payload as a compact-JSON array, tokenized whole.
+The method was calibrated against the 1.0 tree before use —
+it reproduces the standing 1.0 record byte- and token-exact
+(27,769 bytes; 6,139 cl100k_base; 6,458 o200k_base; all 15
+per-tool values).
+
+| Measure | Value |
+|---|---|
+| Tools | 15 |
+| Payload | 28,109 bytes |
+| **cl100k_base** | **6,231** |
+| o200k_base (informational) | 6,554 |
+
+Growth vs the 1.0 record: **+92 cl100k_base** (+340 bytes),
+entirely in the two tools whose descriptions the N-code work
+touched: `neemu_extract_faces` 565 → 631 (+66) and
+`neemu_extract_dialogue` 301 → 327 (+26) — the named
+`MAX_PAGES_PER_CALL` = 32 bound and the ratified N-code range
+in the `f_code` field text. The other 13 tools are unchanged.
+
+Disposition (DFR-5 rule): the **6,139 measure stands as the
+1.0 record** above; **6,231 is the current development
+measure**. Per the D-215 terms, payload growth past 6,139
+returns the question to the Owner under the revisit logic —
+this section is that return, recorded at the landing; the
+growth is description text for a ratified surface change,
+not a new tool or a schema expansion.
+
 ## History of the measure
 
 - **Pre-S3 (11 tools):** 4,201 cl100k_base (o200k_base 4,440;
