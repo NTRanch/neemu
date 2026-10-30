@@ -87,5 +87,6 @@ Curated 2026-10-28 (D-313 Phase 0 — NTRanch four → 1.0 program): baseline is
   - evidence: 1 verify commands, all exit 0 at 2026-10-29T05:11:24Z
 
 ## Phase 7 — Post-1.0 canon follow-ups
-- [ ] R-701 N-code face-state resolution (D-326 follow-up): N-01..N-06 resolve server-side through the F-code lookup (extract_faces + act face timelines), N-05 as named variant only, lane labels carried on the resolution snapshot; the 32-page per-call bound (MAX_PAGES_PER_CALL) named in tool descriptions + README
+- [x] R-701 N-code face-state resolution (D-326 follow-up): N-01..N-06 resolve server-side through the F-code lookup (extract_faces + act face timelines), N-05 as named variant only, lane labels carried on the resolution snapshot; the 32-page per-call bound (MAX_PAGES_PER_CALL) named in tool descriptions + README
   - verify: cargo test
+  - evidence: 1 verify commands, all exit 0 at 2026-10-30T05:54:15Z
