@@ -28,6 +28,7 @@ pub mod acts;
 pub mod blocklist;
 pub mod guard;
 pub mod media;
+pub mod profile;
 pub mod s2;
 pub mod s3;
 pub mod server;

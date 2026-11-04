@@ -9,6 +9,13 @@
 //! Registry root: `--home <dir>`, else `$NEEMU_HOME`, else
 //! `$XDG_DATA_HOME/neemu` or `~/.local/share/neemu`.
 //!
+//! Tool profile (D-934): `--profile <spec>`, else
+//! `$NEEMU_TOOL_PROFILE`, else `tool_profile` in the registry
+//! root's `neemu.toml`, else the default `core` profile. The
+//! profile scopes the whole served catalog for the process; an
+//! invalid spec is a startup error (fail closed), never a silent
+//! fall back to the full surface.
+//!
 //! As of 0.2.0 (WS2 of the MCP standardization program, decision
 //! D-113) this server runs on rmcp, the official Rust MCP SDK, and
 //! speaks the modern protocol era only (2026-07-28): sessions open
@@ -24,6 +31,7 @@ use std::process::ExitCode;
 use std::sync::Arc;
 
 use neemu::guard;
+use neemu::profile::{config_tool_profile, ToolProfile};
 use neemu::server::NeemuServer;
 use neemu::Neemu;
 use rmcp::transport::async_rw::AsyncRwTransport;
@@ -61,10 +69,59 @@ fn registry_root() -> PathBuf {
         .join("neemu")
 }
 
+/// The `--profile` argument's value, if the flag is present.
+/// A trailing flag with no value is a startup error, not a
+/// silent default.
+fn profile_argument() -> Result<Option<String>, String> {
+    let mut args = std::env::args().skip(1);
+    while let Some(arg) = args.next() {
+        if arg == "--profile" {
+            return match args.next() {
+                Some(value) => Ok(Some(value)),
+                None => Err("--profile requires a value".to_string()),
+            };
+        }
+        if let Some(value) = arg.strip_prefix("--profile=") {
+            return Ok(Some(value.to_string()));
+        }
+    }
+    Ok(None)
+}
+
+/// Resolve the launch tool profile by precedence (argument →
+/// `NEEMU_TOOL_PROFILE` → `tool_profile` in the registry root's
+/// `neemu.toml` → default `core`). A present-but-unreadable or
+/// malformed config file fails closed.
+fn launch_profile(root: &std::path::Path) -> Result<ToolProfile, String> {
+    let argument = profile_argument()?;
+    let environment = std::env::var("NEEMU_TOOL_PROFILE").ok();
+    let config_path = root.join("neemu.toml");
+    let config = match std::fs::read_to_string(&config_path) {
+        Ok(contents) => config_tool_profile(&contents).map_err(|error| error.to_string())?,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+        Err(error) => {
+            return Err(format!("cannot read config at {config_path:?}: {error}"));
+        }
+    };
+    ToolProfile::resolve(
+        argument.as_deref(),
+        environment.as_deref(),
+        config.as_deref(),
+    )
+    .map_err(|error| error.to_string())
+}
+
 fn main() -> ExitCode {
     // The baseline opened the registry before reading a single
     // frame and failed fast when it could not; keep that contract.
     let root = registry_root();
+    let profile = match launch_profile(&root) {
+        Ok(profile) => profile,
+        Err(error) => {
+            eprintln!("neemu: {error}");
+            return ExitCode::FAILURE;
+        }
+    };
     let neemu = match Neemu::open(root.clone()) {
         Ok(neemu) => neemu,
         Err(error) => {
@@ -82,7 +139,7 @@ fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    match runtime.block_on(run(neemu)) {
+    match runtime.block_on(run(neemu, profile)) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
             eprintln!("neemu: serve loop ended: {error}");
@@ -96,14 +153,14 @@ fn main() -> ExitCode {
 /// back to stdout through the same lock the guard writes with. When
 /// the serve ends (stdin EOF), the process exits — the baseline
 /// front end's exit contract.
-async fn run(neemu: Neemu) -> std::io::Result<()> {
+async fn run(neemu: Neemu, profile: ToolProfile) -> std::io::Result<()> {
     let (client_side, server_side) = tokio::io::duplex(DUPLEX_BUFFER_BYTES);
     let (server_read, server_write) = tokio::io::split(server_side);
     let (client_read, client_write) = tokio::io::split(client_side);
     let stdout: guard::SharedStdout = Arc::new(Mutex::new(tokio::io::stdout()));
 
     let ordering = guard::Ordering::new();
-    let handler = NeemuServer::new(neemu);
+    let handler = NeemuServer::new(neemu, profile);
     let serve = tokio::spawn(async move {
         let transport = AsyncRwTransport::new_server(server_read, server_write);
         match handler.serve(transport).await {

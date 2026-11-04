@@ -421,6 +421,10 @@ fn stdio_discover_and_call() {
     let mut child = Command::new(env!("CARGO_BIN_EXE_neemu"))
         .arg("--home")
         .arg(&registry)
+        // This test drives the full intake flow over stdio, so it
+        // opts into the full tool surface explicitly (D-934).
+        .arg("--profile")
+        .arg("full")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()

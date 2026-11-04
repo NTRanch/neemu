@@ -44,6 +44,7 @@ use rmcp::{ErrorData, RoleServer, ServerHandler};
 use serde_json::Value;
 use tokio::sync::Mutex;
 
+use crate::profile::ToolProfile;
 use crate::tools;
 use crate::{CallError, Neemu};
 
@@ -55,11 +56,24 @@ use crate::{CallError, Neemu};
 /// payload is the baseline's, plus the one annotation delta the
 /// waiver job was commissioned to land — `neemu_export`'s
 /// readOnlyHint, see `tools.rs`.)
+/// The unfiltered catalog, kept for the wire-shape tests below
+/// that pin the served surface to the baseline's definitions.
+#[cfg(test)]
 fn tool_definitions() -> Vec<Tool> {
+    tool_definitions_for(&ToolProfile::Full)
+}
+
+/// The catalog a launch with `profile` serves: the baseline's
+/// definitions, filtered by the profile (D-934). The full profile
+/// applies no filter, so its catalog is the baseline's by
+/// construction; any other profile drops every tool the profile
+/// does not serve, in catalog order.
+fn tool_definitions_for(profile: &ToolProfile) -> Vec<Tool> {
     let definitions = tools::tool_definitions();
     let entries = definitions.as_array().expect("definitions are an array");
     entries
         .iter()
+        .filter(|entry| profile.serves_tool(entry["name"].as_str().expect("tool name")))
         .map(|entry| {
             let name = entry["name"].as_str().expect("tool name").to_string();
             let description = entry["description"]
@@ -108,13 +122,15 @@ fn text_result(text: String, is_error: bool) -> CallToolResult {
 #[derive(Clone)]
 pub struct NeemuServer {
     neemu: Arc<Neemu>,
+    profile: ToolProfile,
     dispatch: Arc<Mutex<()>>,
 }
 
 impl NeemuServer {
-    pub fn new(neemu: Neemu) -> Self {
+    pub fn new(neemu: Neemu, profile: ToolProfile) -> Self {
         NeemuServer {
             neemu: Arc::new(neemu),
+            profile,
             dispatch: Arc::new(Mutex::new(())),
         }
     }
@@ -151,7 +167,7 @@ impl ServerHandler for NeemuServer {
         _context: RequestContext<RoleServer>,
     ) -> Result<ListToolsResult, ErrorData> {
         Ok(ListToolsResult {
-            tools: tool_definitions(),
+            tools: tool_definitions_for(&self.profile),
             ..Default::default()
         })
     }
@@ -162,6 +178,15 @@ impl ServerHandler for NeemuServer {
         _context: RequestContext<RoleServer>,
     ) -> Result<CallToolResponse, ErrorData> {
         let name = request.name.to_string();
+        // Profile scoping is process-wide, not list-only: a tool
+        // outside the launched profile is unknown to this process,
+        // answered exactly like any other unknown tool.
+        if !self.profile.serves_tool(&name) {
+            return Err(ErrorData::invalid_params(
+                format!("unknown tool: {name}"),
+                None,
+            ));
+        }
         let arguments = Value::Object(request.arguments.unwrap_or_default());
         // The baseline served sequentially; hold the dispatch mutex
         // for the whole call so the file-backed registry store sees
@@ -227,5 +252,41 @@ mod tests {
             .expect("export tool");
         let annotations = export.annotations.expect("annotations");
         assert_eq!(annotations.read_only_hint, Some(false));
+    }
+
+    #[test]
+    fn core_profile_serves_only_the_spine_in_catalog_order() {
+        let served: Vec<String> = tool_definitions_for(&ToolProfile::core())
+            .iter()
+            .map(|tool| tool.name.to_string())
+            .collect();
+        assert_eq!(served, ["neemu_list_records", "neemu_export"]);
+    }
+
+    #[test]
+    fn pack_profile_serves_core_plus_the_pack_in_catalog_order() {
+        let profile = ToolProfile::parse("voice").expect("voice parses");
+        let served: Vec<String> = tool_definitions_for(&profile)
+            .iter()
+            .map(|tool| tool.name.to_string())
+            .collect();
+        assert_eq!(
+            served,
+            [
+                "neemu_analyze_voice",
+                "neemu_assess_voice_clonability",
+                "neemu_derive_voice",
+                "neemu_emit_torori_cue",
+                "neemu_list_records",
+                "neemu_export",
+            ]
+        );
+    }
+
+    #[test]
+    fn full_profile_definitions_equal_the_unfiltered_catalog() {
+        let filtered = serde_json::json!(tool_definitions_for(&ToolProfile::Full));
+        let unfiltered = serde_json::json!(tool_definitions());
+        assert_eq!(filtered, unfiltered);
     }
 }

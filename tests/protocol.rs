@@ -40,10 +40,25 @@ fn modern_meta() -> JsonValue {
     })
 }
 
+/// Spawn a server over the full tool surface: these tests pin the
+/// protocol/framing contract against the complete catalog, so
+/// they opt into `--profile full` explicitly (D-934). The bare
+/// default launch is covered by
+/// `default_launch_serves_core_and_scopes_calls`.
 async fn spawn_server(home: &std::path::Path) -> Client {
+    spawn_server_with_args(home, &["--profile", "full"]).await
+}
+
+/// Spawn a server with no profile selector: the default launch.
+async fn spawn_default_server(home: &std::path::Path) -> Client {
+    spawn_server_with_args(home, &[]).await
+}
+
+async fn spawn_server_with_args(home: &std::path::Path, extra: &[&str]) -> Client {
     let mut child = tokio::process::Command::new(env!("CARGO_BIN_EXE_neemu"))
         .arg("--home")
         .arg(home)
+        .args(extra)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
@@ -362,5 +377,31 @@ async fn pipelined_startup_answers_in_request_order() {
         order.push(response["id"].as_u64().unwrap());
     }
     assert_eq!(order, vec![0, 1, 2]);
+    client.shutdown().await;
+}
+
+#[tokio::test]
+async fn default_launch_serves_core_and_scopes_calls() {
+    let home = temp_dir("protocol-default-profile");
+    let mut client = spawn_default_server(&home).await;
+    let discover = client.discover(1).await;
+    assert!(discover.get("result").is_some(), "discover: {discover}");
+    let list = client.list_tools(2).await;
+    let tools = list["result"]["tools"].as_array().expect("tools array");
+    let names: Vec<&str> = tools.iter().map(|t| t["name"].as_str().unwrap()).collect();
+    assert_eq!(names, ["neemu_list_records", "neemu_export"]);
+    // A tool outside the default profile is unknown to the
+    // process, not merely unlisted: the call is refused with the
+    // baseline's unknown-tool protocol error.
+    let refused = client.call(3, "neemu_register_work", json!({})).await;
+    assert_eq!(
+        refused["error"]["code"],
+        json!(-32602),
+        "refusal: {refused}"
+    );
+    assert_eq!(
+        refused["error"]["message"],
+        json!("unknown tool: neemu_register_work")
+    );
     client.shutdown().await;
 }
