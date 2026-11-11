@@ -44,12 +44,11 @@ both claim video: motion records come from the fathom instrument;
 neemu's records reference a motion record by hash where they
 describe the same clip.
 
-**A law to check.** The bar library is analysis material that is
-"never training inputs". Neemu packages voice performances as
-*conditioning cues* for synthesis. Whether a cue derived from a
-third party's voice performance is a measurement or an input is
-exactly the line the clean-room law draws (voice performances
-never cross). This plan does not rule it; it flags it.
+**Voice cues — ruled (D-1265).** A voice cue is an **input, not a
+measurement**: it conditions synthesis. It therefore inherits the
+source performance's per-character voice lock (Aria discipline),
+carries `origin_lane` + `content_label` from birth, and never crosses
+projects or lanes detached from that record.
 
 ## Extraction lessons it consumes
 
@@ -60,8 +59,10 @@ It produces them. It should emit the estate lesson-record shape
 
 - **U1 — Boundary note with fathom** (who measures what; hash links).
 - **U2 — Lesson-record output shape.**
-- **U3 — The voice-cue question** put to the Owner with both readings.
+- **U3 — Enforce the voice-cue ruling**: a cue record without its
+  voice-lock reference and labels does not construct; an export of a
+  cue to another project or lane is refused. Tests for both.
 - **U4 — Face-state reads joined to timing charts** (after the
   instrument): reaction legibility needs both.
 
-**Pick-up order.** U3 first (it may bound the rest), U1, U2, U4.
+**Pick-up order.** U3 first, U1, U2, U4.
