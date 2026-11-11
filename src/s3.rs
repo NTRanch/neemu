@@ -23,6 +23,13 @@
 //!   `conditioning_refusal`): SPEC §5's kind list predates the S3
 //!   records, the same gap S1/S2 closed for their kinds;
 //!   `rights_artifact_missing` and `refusal_gate_tier` are §5's own.
+//! - D-1265 (2026-11-10): a voice cue is an input, not a
+//!   measurement. Cue construction enforces the ruling in
+//!   [`crate::voice_cue`]: no voice lock or no lane labels means
+//!   the cue does not construct (`voice_cue_refusal`), and cue
+//!   records carry the stamp from birth. The frozen bundle.ron
+//!   shape is unchanged — the stamp lives on neemu's cue and
+//!   bundle records, which are the travelling record.
 
 use std::fs;
 use std::path::PathBuf;
@@ -1224,7 +1231,7 @@ pub fn emit_torori_cue(neemu: &Neemu, args_in: &Value) -> CallResult {
             ))
         }
     };
-    let (identity_work, _identity) = neemu
+    let (_identity_work, identity) = neemu
         .find_voice_identity(&target_voice)
         .ok_or_else(|| {
             CallError::Gate(
@@ -1235,7 +1242,11 @@ pub fn emit_torori_cue(neemu: &Neemu, args_in: &Value) -> CallResult {
                 .with_details(json!({ "work_id": work_id, "target_voice": target_voice })),
             )
         })?;
-    let _ = identity_work;
+    // D-1265: the cue's stamp (voice lock + lane labels + evidence)
+    // is built and refused HERE, at construction — before any cue is
+    // built, any bundle is written, or any record is minted. A cue
+    // without its lock and labels does not construct.
+    let stamp = crate::voice_cue::build_stamp(obj, &identity)?;
     let cues_in = opt_arr(obj, "cues")?.ok_or_else(|| args("field 'cues' is required (array)"))?;
     if cues_in.is_empty() || cues_in.len() > MAX_EMIT_CUES {
         return Err(args(format!(
@@ -1476,7 +1487,7 @@ pub fn emit_torori_cue(neemu: &Neemu, args_in: &Value) -> CallResult {
 
     let mut cue_record_ids = Vec::new();
     for cue in &built {
-        let body = json!({
+        let mut body = json!({
             "record_kind": "torori_cue",
             "work_id": work_id,
             "cue_id": cue.cue_id,
@@ -1491,9 +1502,14 @@ pub fn emit_torori_cue(neemu: &Neemu, args_in: &Value) -> CallResult {
             "voice_record_id": cue.voice_record_id,
             "extractor": EXTRACTOR_ID,
         });
+        // D-1265: lock + labels + evidence are part of the record
+        // from birth, identical on every cue in the bundle.
+        if let Some(fields) = body.as_object_mut() {
+            fields.extend(stamp.fields());
+        }
         cue_record_ids.push(neemu.mint_record(&work_id, "cue_", body)?);
     }
-    let bundle_body = json!({
+    let mut bundle_body = json!({
         "record_kind": "torori_cue_bundle",
         "work_id": work_id,
         "bundle_id": bundle_id,
@@ -1505,6 +1521,9 @@ pub fn emit_torori_cue(neemu: &Neemu, args_in: &Value) -> CallResult {
         "cue_bundle_schema_sha256": CUE_BUNDLE_SCHEMA_SHA256,
         "extractor": EXTRACTOR_ID,
     });
+    if let Some(fields) = bundle_body.as_object_mut() {
+        fields.extend(stamp.fields());
+    }
     let bundle_record_id = neemu.mint_record(&work_id, "tcb_", bundle_body)?;
     Ok(json!({
         "work_id": work_id,
@@ -1514,6 +1533,10 @@ pub fn emit_torori_cue(neemu: &Neemu, args_in: &Value) -> CallResult {
         "content_hash": content_hash,
         "cue_record_ids": cue_record_ids,
         "bundle_dir": bundle_dir.to_string_lossy(),
+        "voice_lock_ref": stamp.voice_lock_ref,
+        "project_id": stamp.project_id,
+        "origin_lane": stamp.origin_lane,
+        "content_label": stamp.content_label,
     }))
 }
 

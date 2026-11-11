@@ -331,7 +331,7 @@ fn derive_from_not_clonable_refuses() {
 fn emit_refusal_battery() {
     let rig = av_rig("s3-adv-emit");
     let (work_id, preflight_id, voice_id, assessment_id) = clonable_assessment(&rig, true);
-    call(
+    let derived = call(
         &rig.neemu,
         "neemu_derive_voice",
         derive_args(&work_id, &preflight_id, &assessment_id),
@@ -348,10 +348,18 @@ fn emit_refusal_battery() {
         }),
     );
     let dialogue_id = dialogue["record_ids"][0].as_str().unwrap().to_string();
+    // D-1265: the battery's emit calls carry a valid lock + labels,
+    // so the refusals below are the battery's own (target voice,
+    // conditioning), not the construction gate.
     let emit = |cues: Value, target: Value| {
         let mut args = json!({
             "work_id": work_id,
             "preflight_id": preflight_id,
+            "voice_lock_ref": derived["identity_id"],
+            "project_id": "strobe",
+            "origin_lane": "ntranch",
+            "content_label": "nsfw",
+            "evidence": [{ "kind": "derivation", "ref": derived["derivation_id"] }],
             "cues": cues,
         });
         if !target.is_null() {

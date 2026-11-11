@@ -616,13 +616,29 @@ pub fn tool_definitions() -> Value {
         },
         {
             "name": "neemu_emit_torori_cue",
-            "description": "Emit a torori cue bundle (bundle.ron, frozen format) from dialogue lines (SPEC 3.5): delivery normalised to torori's frozen conditioning schema, ranges refused never clamped, target_voice REQUIRED and must resolve to an estate VoiceIdentity - never a source performer. File bundles only; neemu never calls torori.",
+            "description": "Emit a torori cue bundle (bundle.ron, frozen format) from dialogue lines (SPEC 3.5): delivery normalised to torori's frozen conditioning schema, ranges refused never clamped, target_voice REQUIRED and must resolve to an estate VoiceIdentity - never a source performer. D-1265: a cue is an input that conditions synthesis, so voice_lock_ref (the resolved identity's record id), project_id, origin_lane and evidence are REQUIRED at construction - a cue without its lock and lane labels does not construct (voice_cue_refusal); content_label defaults to nsfw when unclassified (fail-closed). File bundles only; neemu never calls torori.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "work_id": work_id_field(),
                     "preflight_id": preflight_field(),
                     "target_voice": string_field("Estate VoiceIdentity identity_ref."),
+                    "voice_lock_ref": string_field("D-1265 voice lock: the record id of the resolved VoiceIdentity record for target_voice; the cue inherits this lock."),
+                    "project_id": string_field("D-1265: project this cue belongs to; it never travels to another project detached."),
+                    "origin_lane": string_field("D-1265 / Bloch: origin lane the cue is born in (e.g. ntranch, qompassai)."),
+                    "content_label": { "type": "string", "enum": ["nsfw", "sfw"], "description": "D-1265 / Bloch: content label from birth; omitted means unclassified, stamped nsfw fail-closed." },
+                    "evidence": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "kind": string_field("Evidence kind."),
+                                "ref": string_field("Evidence ref.")
+                            },
+                            "required": ["kind", "ref"]
+                        },
+                        "description": "D-1265 / Bloch: evidence the cue's labels rest on; at least one entry required at construction."
+                    },
                     "cues": {
                         "type": "array",
                         "description": "Cues (max 64, torori's bundle cap).",
@@ -643,7 +659,7 @@ pub fn tool_definitions() -> Value {
                         }
                     }
                 },
-                "required": ["work_id", "preflight_id", "target_voice", "cues"],
+                "required": ["work_id", "preflight_id", "target_voice", "voice_lock_ref", "project_id", "origin_lane", "evidence", "cues"],
                 "additionalProperties": false
             },
             "outputSchema": {
@@ -652,7 +668,11 @@ pub fn tool_definitions() -> Value {
                     "record_id": { "type": "string" },
                     "bundle_id": { "type": "string" },
                     "content_hash": { "type": "string" },
-                    "bundle_dir": { "type": "string" }
+                    "bundle_dir": { "type": "string" },
+                    "voice_lock_ref": { "type": "string" },
+                    "project_id": { "type": "string" },
+                    "origin_lane": { "type": "string" },
+                    "content_label": { "type": "string" }
                 }
             },
             "annotations": annotations(false)
@@ -758,13 +778,15 @@ pub fn tool_definitions() -> Value {
         },
         {
             "name": "neemu_export",
-            "description": "Tier-checked bundle export of a cleared work's records (file emitted; no registry change). Training bundles refuse Tier A material (tier_refusal names the blocker); analysis accepts either tier.",
+            "description": "Tier-checked bundle export of a cleared work's records (file emitted; no registry change). Training bundles refuse Tier A material (tier_refusal names the blocker); analysis accepts either tier. D-1265: exporting a voice cue record requires target_project_id and target_lane identical to the cue's birth project and lane - cross-project or cross-lane cue export is refused (voice_cue_refusal), as is any unlabelled legacy cue.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "work_id": work_id_field(),
                     "bundle_kind": { "type": "string", "enum": ["analysis", "training"] },
-                    "record_ids": { "type": "array", "items": { "type": "string" }, "description": "Records to include (default: all extraction records)." }
+                    "record_ids": { "type": "array", "items": { "type": "string" }, "description": "Records to include (default: all extraction records)." },
+                    "target_project_id": string_field("D-1265: declared destination project; required when the selection includes a voice cue record, and must equal its birth project."),
+                    "target_lane": string_field("D-1265: declared destination lane; required when the selection includes a voice cue record, and must equal its origin lane.")
                 },
                 "required": ["work_id", "bundle_kind"],
                 "additionalProperties": false
@@ -1374,6 +1396,14 @@ fn export(neemu: &Neemu, args: &Value) -> CallResult {
                 .into());
             }
         }
+    }
+    // D-1265: a voice cue never travels across projects or lanes.
+    // The check runs over the whole selection before any bundle is
+    // written; non-cue records pass untouched.
+    let target_project_id = opt_str(obj, "target_project_id")?;
+    let target_lane = opt_str(obj, "target_lane")?;
+    for record in &selected {
+        crate::voice_cue::check_cue_export(record, target_project_id, target_lane)?;
     }
     let selected_ids: Vec<Value> = selected.iter().map(|r| r["record_id"].clone()).collect();
     let bundle_body = json!({

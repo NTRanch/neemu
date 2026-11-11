@@ -225,7 +225,7 @@ fn derive_mints_watermarked_identity() {
 fn emit_bundle_matches_torori_frozen_shape() {
     let rig = av_rig("s3-emit");
     let (work_id, preflight_id, voice_id, assessment_id) = clonable_assessment(&rig, true);
-    call(
+    let derived = call(
         &rig.neemu,
         "neemu_derive_voice",
         json!({
@@ -253,6 +253,9 @@ fn emit_bundle_matches_torori_frozen_shape() {
             }
         }),
     );
+    // D-1265: the emit call carries the voice lock (the derived
+    // identity's record id) and its lane labels from birth.
+    let voice_lock_ref = derived["identity_id"].as_str().unwrap().to_string();
     let dialogue = call(
         &rig.neemu,
         "neemu_extract_dialogue",
@@ -274,6 +277,11 @@ fn emit_bundle_matches_torori_frozen_shape() {
             "work_id": work_id,
             "preflight_id": preflight_id,
             "target_voice": "voice.derived.motte2",
+            "voice_lock_ref": voice_lock_ref,
+            "project_id": "strobe",
+            "origin_lane": "ntranch",
+            "content_label": "nsfw",
+            "evidence": [{ "kind": "derivation", "ref": derived["derivation_id"] }],
             "cues": [
                 {
                     "dialogue_id": dialogue_id,
@@ -347,6 +355,11 @@ fn emit_bundle_matches_torori_frozen_shape() {
             "work_id": work_id,
             "preflight_id": preflight_id,
             "target_voice": "voice.derived.motte2",
+            "voice_lock_ref": voice_lock_ref,
+            "project_id": "strobe",
+            "origin_lane": "ntranch",
+            "content_label": "nsfw",
+            "evidence": [{ "kind": "derivation", "ref": derived["derivation_id"] }],
             "cues": [
                 {
                     "dialogue_id": dialogue_id,

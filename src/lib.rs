@@ -33,6 +33,7 @@ pub mod s2;
 pub mod s3;
 pub mod server;
 pub mod tools;
+pub mod voice_cue;
 
 use serde_json::{json, Map, Value};
 use sha2::{Digest, Sha256};
@@ -159,6 +160,10 @@ pub const KIND_CLONABILITY_REFUSAL: &str = "clonability_refusal";
 /// S3: a conditioning value outside torori's frozen schema range at
 /// cue-emit time — refused, never clamped (schema law).
 pub const KIND_CONDITIONING_REFUSAL: &str = "conditioning_refusal";
+/// D-1265: a voice cue refused at construction (no voice lock, no
+/// lane labels, or no evidence) or at export (cross-project or
+/// cross-lane travel, or an unlabelled legacy cue).
+pub const KIND_VOICE_CUE_REFUSAL: &str = "voice_cue_refusal";
 
 /// A gate refusal: an execution result with `isError` and a typed
 /// `error.kind`, never a protocol error (SPEC §5).
