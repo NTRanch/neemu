@@ -1,4 +1,6 @@
 # neemu
+
+mcp-name: io.github.NTRanch/neemu
 [![crates.io](https://img.shields.io/crates/v/neemu.svg)](https://crates.io/crates/neemu)
 
 Neemu MCP — media extraction for animation and voice. Neemu turns

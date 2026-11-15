@@ -1,10 +1,11 @@
 [package]
 name = "neemu"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 description = "Neemu MCP — media extraction for animation and voice (S1: registry + screen/tier gates + image lane)"
 license = "Apache-2.0"
 
+readme = "README.md"
 [dependencies]
 # WS2 (D-113): framing moves to the official Rust MCP SDK, modern era
 # only (2026-07-28). The version pin is the fleet pin — one rmcp
