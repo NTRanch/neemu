@@ -6,6 +6,19 @@ description = "Neemu MCP — media extraction for animation and voice (S1: regis
 license = "Apache-2.0"
 
 readme = "README.md"
+
+# Fleet TUI programme (D-1562): the root package plus the neemu-tui
+# console crate. neemu-tui inherits the workspace version (1.0.1,
+# matching the server crate; server.json stays at 1.0.0 — a known
+# skew recorded in the census, deliberately not fixed here).
+[workspace]
+members = ["crates/neemu-tui"]
+
+[workspace.package]
+version = "1.0.1"
+edition = "2021"
+license = "Apache-2.0"
+
 [dependencies]
 # WS2 (D-113): framing moves to the official Rust MCP SDK, modern era
 # only (2026-07-28). The version pin is the fleet pin — one rmcp

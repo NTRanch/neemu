@@ -1,0 +1,30 @@
+# neemu trigger rules (fleet TUI programme D-1562, DESIGN D4).
+# Rules are data, not code. Every rule listed here is visible in the
+# Fleet panel; a rule not listed here does not exist. Disabling a rule
+# in the panel takes effect without restart.
+#
+# Seam honesty (verified 2026-11-16 against the torori tree, read-only):
+# torori exposes NO single-cue intake tool. Its cue-prep surface is the
+# bundle lane: torori_bundle_validate (read) and torori_bundle_ingest
+# (write, idempotent) over a bundle directory (bundle.ron + assets).
+# A neemu torori_cue record is not a bundle directory, so this rule can
+# only declare a CANDIDATE: assemble a cue bundle from the emitted cue
+# record, then torori_bundle_ingest is the call. The rule is plan-mode:
+# a human approves in the TUI, and rung 1 does not fire the call at all
+# (no torori transport is wired); the candidate and its audit line are
+# the deliverable.
+
+[[rule]]
+id = "neemu-extraction-to-torori-cue"
+origin_lane = "ntranch"
+content_label = "nsfw"
+on_event = "extraction.completed"
+where_field = "tool"
+where_op = "eq"
+where_value = "neemu_emit_torori_cue"
+target_mcp = "torori"
+target_tool = "torori_bundle_ingest"
+mode = "plan"
+max_depth = 1
+enabled = true
+note = "candidate only: torori has no single-cue intake; a cue bundle must be assembled from the cue record before torori_bundle_ingest(bundle_dir) can be called"
