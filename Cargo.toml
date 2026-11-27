@@ -22,3 +22,7 @@ path = "src/main.rs"
 
 [profile.release]
 debug = false
+
+[[bench]]
+name = "hot_paths"
+harness = false
